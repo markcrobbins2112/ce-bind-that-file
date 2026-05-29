@@ -1,0 +1,13 @@
+test-fixture/
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+*.vsix
+*.zip
+!*.*
+bind-that-file-*.vsix
