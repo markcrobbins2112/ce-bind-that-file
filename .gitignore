@@ -1,13 +1,10 @@
-test-fixture/
 node_modules/
+test-fixture/
 build/
 dist/
 coverage/
 .DS_Store
-*.log
-.env*
-!.env.example
 *.vsix
+*.log
 *.zip
-!*.*
-bind-that-file-*.vsix
+\!*.*
