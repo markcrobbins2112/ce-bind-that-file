@@ -20,9 +20,17 @@
 		"README.md",
 		"LICENSE"
 	],
+	"scripts": {
+		"vscode:prepublish": "echo 'Prepublish checks completed successfully.'",
+		"build": "vsce package",
+		"build:no-deps": "vsce package --no-dependencies"
+	},
+	"devDependencies": {
+		"@vscode/vsce": "^3.0.0"
+	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/markchristianrobbins/bind-that-file.git"
+		"url": "https://github.com/markchristianrobbins/bind-that-file.git"
 	},
 	"bugs": {
 		"url": "https://github.com/markchristianrobbins/bind-that-file/issues"
@@ -35,13 +43,5 @@
 				"title": "Bind That File: Open Specified File"
 			}
 		]
-	},
-	"scripts": {
-		"vscode:prepublish": "echo 'Prepublish checks completed successfully.'",
-		"build": "vsce package",
-		"build:no-deps": "vsce package --no-dependencies"
-	},
-	"devDependencies": {
-		"@vscode/vsce": "^3.0.0"
 	}
 }

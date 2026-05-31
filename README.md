@@ -2,6 +2,7 @@
 
 An adaptive, terminal-resilient file navigation engine for VS Code and Cursor. Bind specific files, arrays of files, or wildcards to your favorite keyboard shortcuts without losing focus when working in the terminal.
 
+![icon](icon.jpg)
 ## Key Features
 
 * 🚀 **Terminal-Safe Shortcuts**: Explicit configuration bypasses terminal shell capture to trigger actions instantly from anywhere.
@@ -98,3 +99,16 @@ To guarantee that the terminal releases your chosen hotkeys instantly, update yo
    ```
 3. Open the Extensions sidebar view inside your editor (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 4. Click the `...` three-dots context action bar at the top right, select **Install from VSIX...**, and load your compiled package.
+
+---
+## AI Primary Files
+* ▪️[AGENTS.md](AGENTS.md)
+* ▪️[AILOG.md](AILOG.md)
+* ▪️[AITASKS.md](AITASKS.md)
+* ▪️[BUILD.md](BUILD.md)
+* ▪️[CODE.md](CODE.md)
+* ▪️[FEATURES.md](FEATURES.md)
+* ▪️[MANUAL.md](MANUAL.md)
+* 🔸[README.md](README.md)
+* ▪️[SPEC.md](SPEC.md)
+* ▪️[TESTING.md](TESTING.md)
