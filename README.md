@@ -3,6 +3,7 @@
 An adaptive, terminal-resilient file navigation engine for VS Code and Cursor. Bind specific files, arrays of files, or wildcards to your favorite keyboard shortcuts without losing focus when working in the terminal.
 
 ![icon](icon.jpg)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/markcrobbins)
 ## Key Features
 
 * 🚀 **Terminal-Safe Shortcuts**: Explicit configuration bypasses terminal shell capture to trigger actions instantly from anywhere.
