@@ -22,8 +22,8 @@
 	],
 	"scripts": {
 		"vscode:prepublish": "echo 'Prepublish checks completed successfully.'",
-		"build": "vsce package",
-		"build:no-deps": "vsce package --no-dependencies"
+		"package": "vsce package",
+		"package:no-deps": "vsce package --no-dependencies"
 	},
 	"devDependencies": {
 		"@vscode/vsce": "^3.0.0"
