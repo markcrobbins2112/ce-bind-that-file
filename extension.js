@@ -4,22 +4,29 @@ const fs = require('fs');
 const os = require('os');
 
 function activate(context) {
-	let disposable = vscode.commands.registerCommand('bind-that-file.open', async function (args) {
-		let rawSpecs = [];
-		if (typeof args === 'string') {
-			rawSpecs = [args];
-		} else if (Array.isArray(args)) {
-			rawSpecs = args;
-		} else if (args && args.path) {
-			rawSpecs = Array.isArray(args.path) ? args.path : [args.path];
-		} else if (args && args.paths) {
-			rawSpecs = Array.isArray(args.paths) ? args.paths : [args.paths];
-		}
+    let disposable = vscode.commands.registerCommand('bind-that-file.open', async function (args) {
+        let rawSpecs = [];
+        
+        // --- ADD THE EXPANSION LAYER HERE ---
+        if (typeof args === 'string') {
+            rawSpecs = [expandEnvironmentVariables(args)];
+        } else if (Array.isArray(args)) {
+            rawSpecs = args.map(arg => expandEnvironmentVariables(arg));
+        } else if (args && args.path) {
+            const pathArr = Array.isArray(args.path) ? args.path : [args.path];
+            rawSpecs = pathArr.map(p => expandEnvironmentVariables(p));
+        } else if (args && args.paths) {
+            const pathsArr = Array.isArray(args.paths) ? args.paths : [args.paths];
+            rawSpecs = pathsArr.map(p => expandEnvironmentVariables(p));
+        }
+        // ------------------------------------
 
-		if (rawSpecs.length === 0) {
-			vscode.window.showErrorMessage('Bind That File: No filespecs provided in args.');
-			return;
-		}
+        if (rawSpecs.length === 0) {
+            vscode.window.showErrorMessage('Bind That File: No filespecs provided in args.');
+            return;
+        }
+
+        // ... rest of your existing activation logic continues below
 
 		let rootPath = '';
 		const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -411,6 +418,28 @@ async function openAndFocusFile(fileUri) {
 	} catch (e) {
 		vscode.window.showErrorMessage(`Bind That File: Error loading file tab. ${e.message}`);
 	}
+}
+
+// Automatically swaps %VAR% or $VAR with real system values
+function expandEnvironmentVariables(targetPath) {
+    if (typeof targetPath !== 'string') return targetPath;
+
+    let expanded = targetPath;
+
+    // 1. Resolve Windows style variables: %APPDATA%
+    expanded = expanded.replace(/%([^%]+)%/g, (_, name) => {
+        return process.env[name] || `%${name}%`; // Fallback to literal if not found
+    });
+
+    // 2. Resolve Mac / Linux style variables: $HOME or ${HOME}
+    expanded = expanded.replace(/\$([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, name) => {
+        return process.env[name] || `$${name}`;
+    });
+    expanded = expanded.replace(/\$\{([^}]+)\}/g, (_, name) => {
+        return process.env[name] || `\${${name}}`;
+    });
+
+    return expanded;
 }
 
 function deactivate() { }

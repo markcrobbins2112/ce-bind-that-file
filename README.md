@@ -108,14 +108,115 @@ Open your global `keybindings.json` layout panel (`Ctrl+Shift+P` / `Cmd+Shift+P`
 ]
 ```
 
-### ⚙️ Important Terminal Whitelisting
-To guarantee that the terminal releases your chosen hotkeys instantly, update your global editor `settings.json` file to include the extension command:
-
+### 4. Mapping Absolute OS File System Paths
+You can link directly to a file anywhere on your hard drive, completely independent of whatever project workspace folder you currently have open.
 ```json
-"terminal.integrated.commandsToSkipShell": [
-    "bind-that-file.open"
+[
+  {
+    "key": "ctrl+alt+h",
+    "command": "bind-that-file.open",
+    "args": "C:/_o/__/code-markdown-ai/templates/_/main.md"
+  }
 ]
 ```
+
+### 5. Mapping Dynamic System Environment Variables
+Use local platform context keys to easily navigate right into your active application profiles, cache systems, or machine profile directories across different devices.
+```json
+[
+  {
+    "key": "shift+` c",
+    "command": "bind-that-file.open",
+    "description": "Open Global Settings via Windows Variable",
+    "args": "%APPDATA%/Cursor/User/settings.json"
+  },
+  {
+    "key": "shift+` m",
+    "command": "bind-that-file.open",
+    "description": "Open User Configuration via Mac/Linux Variable",
+    "args": "\$HOME/Library/Application Support/Code/User/settings.json"
+  }
+]
+```
+
+### 6. Mapping Absolute Wildcard Glob Search Queries
+Combine absolute paths or environment variables with multi-level pattern searches to quickly pull file pickers from folders outside of your open project workspace.
+```json
+[
+  {
+    "key": "shift+` a",
+    "command": "bind-that-file.open",
+    "args": "C:/_o/__/code-markdown-ai/templates/_/**/*.md"
+  },
+  {
+    "key": "shift+` p",
+    "command": "bind-that-file.open",
+    "args": "%APPDATA%/Cursor/User/snippets/**/*.json"
+  }
+]
+```
+
+### 7. Mapping Object Properties (Alternative Multi-Path Pass)
+If you are passing arguments programmatically from another automation script, or using alternative context mapping frameworks, the system natively handles structured objects containing single or multi-target paths.
+```json
+[
+  {
+    "key": "ctrl+alt+o",
+    "command": "bind-that-file.open",
+    "args": {
+      "path": "src/services/api.js"
+    }
+  },
+  {
+    "key": "ctrl+alt+p",
+    "command": "bind-that-file.open",
+    "args": {
+      "paths": ["package.json", "tsconfig.json"]
+    }
+  }
+]
+```
+
+### 🖥️ Integrating with the Integrated Terminal
+
+By default, when you click inside the integrated terminal panel in VS Code or Cursor, the active shell (like PowerShell, Bash, or Zsh) takes total control of your keyboard. This means pressing custom shortcuts while working in the terminal might accidentally send raw characters to your command line instead of triggering your file bindings.
+
+To prevent this key-trapping issue, you can configure your shortcuts using the two methods below.
+
+#### Method A: The Contextual Keybinding Approach (Recommended)
+You can duplicate your keybinding in `keybindings.json` and append the `"when": "terminalFocus"` clause to the second block. This instructs the editor to intercept the key chord immediately and route it straight to the extension, even if the terminal is focused:
+
+```json
+[
+  {
+    "key": "ctrl+alt+f",
+    "command": "bind-that-file.open",
+    "args": "relative.txt"
+  },
+  {
+    "key": "ctrl+alt+f",
+    "command": "bind-that-file.open",
+    "when": "terminalFocus",
+    "args": "relative.txt"
+  }
+]
+```
+
+#### Method B: Global Terminal Override (The Bulletproof Solution)
+If you prefer to define your shortcuts only once, or if you use complex chord patterns (like `shift+`` ` `a`) that your terminal shell still tries to swallow, you can give the extension absolute priority over the terminal. 
+
+Open your global user `settings.json` file and add the command to the skip shell list:
+
+```json
+{
+  "terminal.integrated.commandsToSkipShell": [
+    "bind-that-file.open"
+  ]
+}
+```
+
+This guarantees that no matter what keyboard shortcut layout you use, the extension will instantly break out of the terminal pane and switch focus to your target files.
+
 
 ---
 
