@@ -226,17 +226,85 @@ async function handleSingleDirectFile(rootPath, relativePath) {
 	}
 }
 
+// A zero-dependency helper that translates standard wildcards (*, **) into a working RegExp
+function globToRegex(pattern) {
+	// Normalize all backward slashes to forward slashes first
+	let normalized = pattern.replace(/\\/g, '/');
+	
+	// Escape regular expression special characters except our glob wildcards * and ?
+	let escaped = normalized.replace(/[-/\\^$*+?.()|[\]{}]/g, (match) => {
+		if (match === '*' || match === '?') return match;
+		return '\\' + match;
+	});
+
+	// Convert ** into a broad multiline path traversal match
+	escaped = escaped.replace(/\*\*/g, '.*');
+	
+	// Convert single * (without hitting a path boundary / separator)
+	escaped = escaped.replace(/(?<!\.)\*/g, '[^/]*');
+	
+	// Force the expression to firmly check the entire string start-to-finish
+	return new RegExp('^' + escaped + '$', 'i');
+}
+
 async function handleGlobPatterns(rootPath, patterns) {
 	let allMatches = [];
 	const openFilesMap = getOpenFilesMap();
 
 	for (const pattern of patterns) {
-		const matchedUris = await vscode.workspace.findFiles(pattern, '**/node_modules/**');
-		if (!matchedUris) continue;
+		// Detect if the pattern is absolute (starts with a drive letter C:/ or root /)
+		const isAbsolute = path.isAbsolute(pattern) || /^[a-zA-Z]:/.test(pattern);
 
-		for (const uri of matchedUris) {
-			if (uri && uri.fsPath && !allMatches.some(existing => existing.fsPath === uri.fsPath)) {
-				allMatches.push(uri);
+		if (isAbsolute) {
+			try {
+				// Find where the wildcard symbols start so we can establish a base scan directory
+				const wildcardIdx = pattern.search(/[*?{]/);
+				let baseDir = wildcardIdx !== -1 ? pattern.substring(0, wildcardIdx) : pattern;
+				baseDir = path.dirname(baseDir); // Safely back up to the nearest real folder on disk
+
+				if (!fs.existsSync(baseDir)) continue;
+
+				// Recursive function to sweep the local file system manually
+				const walkSync = (dir) => {
+					const files = fs.readdirSync(dir, { withFileTypes: true });
+					let results = [];
+					for (const file of files) {
+						const resPath = path.join(dir, file.name);
+						if (file.isDirectory()) {
+							results.push(...walkSync(resPath));
+						} else {
+							results.push(resPath);
+						}
+					}
+					return results;
+				};
+
+				const allFilesOnDisk = walkSync(baseDir);
+				
+				// Generate our native pure JS matching regular expression
+				const regexMatcher = globToRegex(pattern);
+
+				for (const fullPath of allFilesOnDisk) {
+					const normalizedPath = fullPath.replace(/\\/g, '/');
+					if (regexMatcher.test(normalizedPath)) {
+						const fileUri = vscode.Uri.file(fullPath);
+						if (!allMatches.some(existing => existing.fsPath === fileUri.fsPath)) {
+							allMatches.push(fileUri);
+						}
+					}
+				}
+			} catch (err) {
+				console.error(`Bind That File: Absolute glob failure: ${err.message}`);
+			}
+		} else {
+			// Standard Relative Path Flow: Fallback safely to the native editor workspace engine
+			const matchedUris = await vscode.workspace.findFiles(pattern, '**/node_modules/**');
+			if (!matchedUris) continue;
+
+			for (const uri of matchedUris) {
+				if (uri && uri.fsPath && !allMatches.some(existing => existing.fsPath === uri.fsPath)) {
+					allMatches.push(uri);
+				}
 			}
 		}
 	}
