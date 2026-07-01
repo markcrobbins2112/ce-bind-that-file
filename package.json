@@ -2,8 +2,9 @@
 	"name": "ce-bind-that-file",
 	"displayName": "Bind That File",
 	"description": "Binds keys to relative paths or glob patterns with automated tab reuse, multi-select, and creation triggers",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"publisher": "markrobbins",
+	"author": "markrobbins",
 	"engines": {
 		"vscode": "^1.60.0"
 	},
