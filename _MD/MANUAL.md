@@ -1,4 +1,8 @@
-# Manual
+---
+title: MANUAL
+---
+
+# MANUAL
 
 This guide describes the structural architecture, module layout, internal algorithms, optimization behaviors, and technical specifications of the **Bind That File** codebase.
 ---
